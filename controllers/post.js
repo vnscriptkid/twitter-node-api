@@ -10,13 +10,13 @@ exports.store = async (req, res, next) => {
     validationHandler(req);
 
     const post = new Post({
-      description: req.body.name,
+      description: req.body.description,
       image: "http://image.com/cat.png",
     });
 
     await post.save();
 
-    res.send({ name: req.body.name });
+    res.send({ name: req.body.description });
   } catch (error) {
     next(error);
   }
