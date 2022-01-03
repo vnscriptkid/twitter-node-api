@@ -4,6 +4,9 @@ const path = require("path");
 
 const postRoutes = require("./routes/post");
 const errorHandler = require("./middlewares/errorHandler");
+const mongoose = require("mongoose");
+
+mongoose.connect("mongodb://localhost:27017/instagram");
 
 const app = express();
 
