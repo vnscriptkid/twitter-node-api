@@ -1,3 +1,5 @@
+const PostNotFound = require("../errors/PostNotFound");
+const Unauthorized = require("../errors/Unauthorized");
 const Post = require("../models/post");
 const validationHandler = require("../validations/validationHandler");
 
@@ -43,6 +45,10 @@ exports.update = async (req, res, next) => {
 
     const post = await Post.findById(req.params.id);
 
+    if (!post) throw new PostNotFound();
+
+    if (!post.user.equals(req.user.id)) throw new Unauthorized();
+
     post.description = req.body.description;
     await post.save();
 
@@ -55,6 +61,11 @@ exports.update = async (req, res, next) => {
 exports.delete = async (req, res, next) => {
   try {
     const post = await Post.findById(req.params.id);
+
+    if (!post) throw new PostNotFound();
+
+    if (!post.user.equals(req.user.id)) throw new Unauthorized();
+
     await post.delete();
 
     return res.send({ message: "success" });
