@@ -25,6 +25,7 @@ exports.store = async (req, res, next) => {
 
     const post = new Post({
       description: req.body.description,
+      user: req.user,
       image: req.file.filename,
     });
 
