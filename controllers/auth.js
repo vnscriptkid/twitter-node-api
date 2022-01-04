@@ -57,6 +57,8 @@ exports.signup = async (req, res, next) => {
 
 exports.me = async (req, res, next) => {
   try {
+    const user = await User.findById(req.user);
+    return res.send(user);
   } catch (err) {
     next(err);
   }
