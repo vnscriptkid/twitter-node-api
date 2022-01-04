@@ -20,7 +20,7 @@ app.use(express.static(path.join(__dirname, "public")));
 
 app.use(passportJwt.initialize());
 
-app.use("/api/posts", postRoutes);
+app.use("/api/posts", passportJwt.authenticate(), postRoutes);
 app.use("/api/auth", authRoutes);
 
 app.use(errorHandler);
