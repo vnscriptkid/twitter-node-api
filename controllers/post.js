@@ -1,8 +1,13 @@
 const Post = require("../models/post");
 const validationHandler = require("../validations/validationHandler");
 
-exports.index = (req, res) => {
-  return res.send({ hi: "thanh" });
+exports.index = async (req, res, next) => {
+  try {
+    const posts = await Post.find().sort({ createdAt: -1 });
+    return res.send(posts);
+  } catch (err) {
+    next(err);
+  }
 };
 
 exports.store = async (req, res, next) => {
