@@ -1,7 +1,8 @@
 const jwt = require("jwt-simple");
-const config = require("../config");
 
+const config = require("../config");
 const User = require("../models/user");
+const validationHandler = require("../validations/validationHandler");
 
 exports.login = async (req, res, next) => {
   try {
@@ -23,6 +24,39 @@ exports.login = async (req, res, next) => {
     const { password, ...userNoPassword } = user;
 
     return res.send({ user: userNoPassword, token });
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.signup = async (req, res, next) => {
+  try {
+    validationHandler(req);
+
+    const { email, password, name } = req.body;
+
+    const existingUser = await User.findOne({ email });
+
+    if (existingUser) {
+      const error = new Error("Email already exists.");
+      error.statusCode = 403;
+      throw error;
+    }
+
+    let user = new User({ email, name });
+    user.password = await user.encryptPassword(password);
+
+    user = await user.save();
+
+    const token = jwt.encode({ id: user.id }, config.jwtSecret);
+    return res.send({ user, token });
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.me = async (req, res, next) => {
+  try {
   } catch (err) {
     next(err);
   }
