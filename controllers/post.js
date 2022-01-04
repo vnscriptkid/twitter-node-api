@@ -35,3 +35,18 @@ exports.store = async (req, res, next) => {
     next(error);
   }
 };
+
+exports.update = async (req, res, next) => {
+  try {
+    validationHandler(req);
+
+    const post = await Post.findById(req.params.id);
+
+    post.description = req.body.description;
+    await post.save();
+
+    return res.send(post);
+  } catch (err) {
+    next(err);
+  }
+};

@@ -16,4 +16,6 @@ router.post(
   postController.store
 );
 
+router.patch("/:id", hasDescription, postController.update);
+
 module.exports = router;
