@@ -7,6 +7,8 @@ const { hasDescription } = require("../validations/validators");
 
 router.get("/", postController.index);
 
+router.get("/:id", postController.show);
+
 router.post(
   "/",
   uploadImage("posts").single("image"),

@@ -10,6 +10,15 @@ exports.index = async (req, res, next) => {
   }
 };
 
+exports.show = async (req, res, next) => {
+  try {
+    const post = await Post.findOne({ _id: req.params.id });
+    return res.send(post);
+  } catch (err) {
+    next(err);
+  }
+};
+
 exports.store = async (req, res, next) => {
   try {
     validationHandler(req);
