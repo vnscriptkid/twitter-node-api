@@ -11,12 +11,12 @@ exports.store = async (req, res, next) => {
 
     const post = new Post({
       description: req.body.description,
-      image: "http://image.com/cat.png",
+      image: req.file.filename,
     });
 
     await post.save();
 
-    res.send({ name: req.body.description });
+    res.send(post);
   } catch (error) {
     next(error);
   }
