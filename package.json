@@ -7,6 +7,7 @@
     "dev": "yarn db:up && nodemon index.js",
     "db:up": "docker-compose up -d",
     "db:down": "docker-compose down",
+    "redis": "docker exec -it instagram-api_redis_1 redis-cli",
     "mongo": "docker exec -it instagram-api_mongo_1 mongo"
   },
   "dependencies": {
@@ -20,7 +21,8 @@
     "mongoose": "^6.1.4",
     "multer": "^1.4.4",
     "passport": "^0.5.2",
-    "passport-jwt": "^4.0.0"
+    "passport-jwt": "^4.0.0",
+    "redis": "^4.0.1"
   },
   "devDependencies": {
     "nodemon": "^2.0.15"
