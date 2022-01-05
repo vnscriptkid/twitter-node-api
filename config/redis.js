@@ -17,7 +17,10 @@ module.exports = {
         redisConfig.password = config.redisPassword;
       }
       client = redis.createClient(redisConfig);
-      client.hget = util.promisify(client.hget);
+
+      client.on("error", (err) => console.log("Redis Client Error", err));
+
+      client.hget = util.promisify(client.HGET);
     }
 
     return client;
