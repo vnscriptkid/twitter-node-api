@@ -5,12 +5,20 @@ const validationHandler = require("../validations/validationHandler");
 
 exports.index = async (req, res, next) => {
   try {
+    let { size, page } = req.query;
+
+    let pageSize = size ? parseInt(size) : 10;
+    let currentPage = page ? parseInt(page) : 1;
+
     const posts = await Post.find({
       // post of my followings and myself
       user: { $in: [...req.user.following, req.user.id] },
     })
+      .skip(pageSize * (currentPage - 1))
+      .limit(pageSize)
       .populate("user")
       .sort({ createdAt: -1 });
+
     return res.send(posts);
   } catch (err) {
     next(err);
