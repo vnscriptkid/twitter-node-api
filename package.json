@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "yarn db:up && nodemon index.js",
     "db:up": "docker-compose up -d",
-    "db:down": "docker-compose down"
+    "db:down": "docker-compose down",
+    "mongo": "docker exec -it instagram-api_mongo_1 mongo"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
