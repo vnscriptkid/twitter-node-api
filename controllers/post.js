@@ -5,7 +5,12 @@ const validationHandler = require("../validations/validationHandler");
 
 exports.index = async (req, res, next) => {
   try {
-    const posts = await Post.find().populate("user").sort({ createdAt: -1 });
+    const posts = await Post.find({
+      // post of my followings and myself
+      user: { $in: [...req.user.following, req.user.id] },
+    })
+      .populate("user")
+      .sort({ createdAt: -1 });
     return res.send(posts);
   } catch (err) {
     next(err);
