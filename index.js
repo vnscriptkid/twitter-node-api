@@ -4,6 +4,7 @@ const express = require("express");
 const cors = require("cors");
 const path = require("path");
 const mongoose = require("mongoose");
+const rateLimit = require("express-rate-limit");
 
 const postRoutes = require("./routes/post");
 const authRoutes = require("./routes/auth");
@@ -15,6 +16,14 @@ mongoose.connect("mongodb://localhost:27017/instagram");
 
 const app = express();
 
+const limiter = rateLimit({
+  windowMs: 15 * 1000, // 15 seconds
+  max: 5, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
+  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+});
+
+app.use(limiter);
 app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
