@@ -3,6 +3,7 @@ const jwt = require("jwt-simple");
 const config = require("../config");
 const User = require("../models/user");
 const validationHandler = require("../validations/validationHandler");
+const redisClient = require("../config/redis").getClient();
 
 exports.login = async (req, res, next) => {
   try {
@@ -57,7 +58,18 @@ exports.signup = async (req, res, next) => {
 
 exports.me = async (req, res, next) => {
   try {
+    const cacheData = await redisClient.hGet("users", req.user.id);
+
+    if (cacheData) {
+      const userObj = JSON.parse(cacheData);
+      const user = new User(userObj);
+      return res.send(user);
+    }
+
     const user = await User.findById(req.user);
+
+    redisClient.HSET("users", req.user.id, JSON.stringify(user));
+
     return res.send(user);
   } catch (err) {
     next(err);
