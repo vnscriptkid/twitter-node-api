@@ -10,6 +10,9 @@ exports.follow = async (req, res, next) => {
     // req.user is mongoose doc
     req.user.following.push(req.params.id);
 
+    // TODO: guard against multiple followings
+    // TODO: guard against follow myself
+
     await req.user.save();
 
     return res.send({ message: "success" });
