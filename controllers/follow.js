@@ -1,3 +1,4 @@
+const redisClient = require("../config/redis").getClient();
 const UserNotFound = require("../errors/UserNotFound");
 const User = require("../models/user");
 
@@ -14,6 +15,8 @@ exports.follow = async (req, res, next) => {
     // TODO: guard against follow myself
 
     await req.user.save();
+
+    redisClient.HDEL("users", req.user.id);
 
     return res.send({ message: "success" });
   } catch (err) {
