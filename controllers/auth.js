@@ -1,20 +1,21 @@
 const jwt = require("jwt-simple");
 
 const config = require("../config");
+const InvalidCredentials = require("../errors/InvalidCredentials");
 const User = require("../models/user");
 const validationHandler = require("../validations/validationHandler");
 const redisClient = require("../config/redis").getClient();
 
 exports.login = async (req, res, next) => {
   try {
-    const user = await User.findOne({ email: req.body.email }).select(
-      "+password"
-    );
+    const user = await User.findOne({
+      $or: [
+        { email: req.body.emailOrUsername },
+        { username: req.body.emailOrUsername },
+      ],
+    }).select("+password");
 
-    const error = new Error("Wrong credentials");
-    error.statusCode = 401;
-
-    if (!user) throw error;
+    if (!user) throw new InvalidCredentials();
 
     const validPassword = await user.isValidPassword(req.body.password);
 
