@@ -36,17 +36,14 @@ exports.show = async (req, res, next) => {
 
 exports.store = async (req, res, next) => {
   try {
-    validationHandler(req);
-
     const post = new Post({
-      description: req.body.description,
-      user: req.user,
-      image: req.file.filename,
+      content: req.body.content,
+      postedBy: req.user,
     });
 
     await post.save();
 
-    res.send(post);
+    return res.status(201).send(post);
   } catch (error) {
     next(error);
   }
