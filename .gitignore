@@ -2,3 +2,4 @@ node_modules
 requests
 public/uploads
 .env
+.vscode
