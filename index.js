@@ -13,7 +13,7 @@ const errorHandler = require("./middlewares/errorHandler");
 const passportJwt = require("./middlewares/passportJwt")();
 require("./config/redis").getClient().connect();
 
-mongoose.connect("mongodb://localhost:27017/instagram");
+mongoose.connect("mongodb://localhost:27015/instagram");
 
 const app = express();
 
