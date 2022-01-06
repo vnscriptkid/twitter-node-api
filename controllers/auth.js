@@ -34,7 +34,7 @@ exports.signup = async (req, res, next) => {
   try {
     validationHandler(req);
 
-    const { email, password, name } = req.body;
+    const { email, password, username, firstName, lastName } = req.body;
 
     const existingUser = await User.findOne({ email });
 
@@ -44,7 +44,7 @@ exports.signup = async (req, res, next) => {
       throw error;
     }
 
-    let user = new User({ email, name });
+    let user = new User({ email, username, firstName, lastName });
     user.password = await user.encryptPassword(password);
 
     user = await user.save();
