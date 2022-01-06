@@ -28,6 +28,9 @@ router.post(
         options: async (email) => {
           const user = await User.findOne({ email });
 
+          // TODO: reduce number of async call to db (username, email)
+          // User.findOne({ $or: [ { username}, { email } ] })
+
           if (user) return Promise.reject("Email already in use.");
         },
       },
