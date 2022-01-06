@@ -1,4 +1,5 @@
 const express = require("express");
+const { checkSchema } = require("express-validator");
 const router = express.Router();
 
 const postController = require("../controllers/post");
@@ -11,8 +12,9 @@ router.get("/:id", postController.show);
 
 router.post(
   "/",
-  uploadImage("posts").single("image"),
-  hasDescription,
+  checkSchema({
+    content: { isString: true, notEmpty: true, trim: true },
+  }),
   postController.store
 );
 
