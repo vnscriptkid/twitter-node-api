@@ -3,7 +3,6 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
-const mongoose = require("mongoose");
 const rateLimit = require("express-rate-limit");
 
 const postRoutes = require("./routes/post");
@@ -12,11 +11,7 @@ const followRoutes = require("./routes/follow");
 const errorHandler = require("./middlewares/errorHandler");
 const passportJwt = require("./middlewares/passportJwt")();
 require("./config/redis").getClient().connect();
-
-mongoose
-  .connect("mongodb://localhost:27015/instagram")
-  .then(() => console.log("db connected"))
-  .catch((err) => console.log("can not connect to db: ", err));
+require("./database");
 
 const app = express();
 
