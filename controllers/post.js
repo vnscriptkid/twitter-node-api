@@ -11,12 +11,12 @@ exports.index = async (req, res, next) => {
     let currentPage = page ? parseInt(page) : 1;
 
     const posts = await Post.find({
-      // post of my followings and myself
-      user: { $in: [...req.user.following, req.user.id] },
+      // my posts
+      postedBy: { $in: [req.user.id] },
     })
       .skip(pageSize * (currentPage - 1))
       .limit(pageSize)
-      .populate("user")
+      .populate("postedBy")
       .sort({ createdAt: -1 });
 
     return res.send(posts);
