@@ -87,7 +87,7 @@ exports.delete = async (req, res, next) => {
 
 exports.like = async (req, res, next) => {
   try {
-    const post = await Post.findById(req.params.id);
+    let post = await Post.findById(req.params.id);
 
     if (!post) throw new PostNotFound();
 
@@ -103,7 +103,11 @@ exports.like = async (req, res, next) => {
       // { new: true }
     );
 
-    return res.send({ isLiked });
+    await Post.findByIdAndUpdate(post.id, {
+      [pullOrAdd]: { likes: req.user.id },
+    });
+
+    return res.status(200).send({ message: "success" });
   } catch (err) {
     next(err);
   }
