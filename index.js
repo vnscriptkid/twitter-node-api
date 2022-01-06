@@ -13,7 +13,10 @@ const errorHandler = require("./middlewares/errorHandler");
 const passportJwt = require("./middlewares/passportJwt")();
 require("./config/redis").getClient().connect();
 
-mongoose.connect("mongodb://localhost:27015/instagram");
+mongoose
+  .connect("mongodb://localhost:27015/instagram")
+  .then(() => console.log("db connected"))
+  .catch((err) => console.log("can not connect to db: ", err));
 
 const app = express();
 
