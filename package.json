@@ -7,8 +7,8 @@
     "dev": "yarn db:up && nodemon index.js",
     "db:up": "docker-compose up -d",
     "db:down": "docker-compose down",
-    "redis": "docker exec -it instagram-api_redis_1 redis-cli",
-    "mongo": "docker exec -it instagram-api_mongo_1 mongo"
+    "redis": "docker exec -it 46cadfd1571e_twitter-clone-node_redis_1 redis-cli",
+    "mongo": "docker exec -it twitter-clone-node_mongo_1 mongo"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
