@@ -1,6 +1,7 @@
 const PostNotFound = require("../errors/PostNotFound");
 const Unauthorized = require("../errors/Unauthorized");
 const Post = require("../models/post");
+const User = require("../models/user");
 const validationHandler = require("../validations/validationHandler");
 
 exports.index = async (req, res, next) => {
@@ -79,6 +80,30 @@ exports.delete = async (req, res, next) => {
     await post.delete();
 
     return res.send({ message: "success" });
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.like = async (req, res, next) => {
+  try {
+    const post = await Post.findById(req.params.id);
+
+    if (!post) throw new PostNotFound();
+
+    const isLiked = req.user.likes.includes(post.id);
+
+    const pullOrAdd = isLiked ? "$pull" : "$addToSet";
+
+    await User.findByIdAndUpdate(
+      req.user.id,
+      {
+        [pullOrAdd]: { likes: post.id },
+      }
+      // { new: true }
+    );
+
+    return res.send({ isLiked });
   } catch (err) {
     next(err);
   }

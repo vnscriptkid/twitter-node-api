@@ -18,6 +18,8 @@ router.post(
   postController.store
 );
 
+router.patch("/:id/like", postController.like);
+
 router.patch("/:id", hasDescription, postController.update);
 
 router.delete("/:id", postController.delete);
