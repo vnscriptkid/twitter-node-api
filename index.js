@@ -1,6 +1,6 @@
 require("dotenv").config();
 require("./config/redis").getClient().connect();
-require("./database");
+require("./DbContext").connect();
 
 const startServer = require("./startServer");
 
