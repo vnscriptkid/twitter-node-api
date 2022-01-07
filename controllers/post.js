@@ -107,7 +107,7 @@ exports.like = async (req, res, next) => {
       [pullOrAdd]: { likes: req.user.id },
     });
 
-    return res.status(200).send({ message: "success" });
+    return res.status(200).send({ message: isLiked ? "disliked" : "liked" });
   } catch (err) {
     next(err);
   }
@@ -127,16 +127,17 @@ exports.retweet = async (req, res, next) => {
       retweetData: originalPost.id,
     });
 
-    let repost = null;
+    const pullOrAdd = deleted ? "$pull" : "$addToSet";
+
+    let repost = deleted;
 
     if (!deleted) {
+      // create a post-like tweet
       repost = await Post.create({
         postedBy: userId,
         retweetData: originalPost.id,
       });
     }
-
-    const pullOrAdd = deleted ? "$pull" : "$addToSet";
 
     const promise1 = Post.findByIdAndUpdate(originalPost.id, {
       [pullOrAdd]: {
@@ -146,18 +147,16 @@ exports.retweet = async (req, res, next) => {
 
     const promise2 = User.findByIdAndUpdate(userId, {
       [pullOrAdd]: {
-        retweets: deleted.id,
+        retweets: repost.id,
       },
     });
 
-    await Promise.all(promise1, promise2);
+    await Promise.all([promise1, promise2]);
 
     return res
-      .send(200)
+      .status(200)
       .send({ message: deleted ? "un-retweeted" : "retweeted" });
   } catch (err) {
     next(err);
   }
 };
-
-exports.retweet = async (req, res, next) => {};
