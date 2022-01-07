@@ -3,6 +3,7 @@ const DbContext = require("../../DbContext");
 const startServer = require("../../startServer");
 const { resetDb, buildUser } = require("../utils/db-utils");
 const axios = require("axios");
+const { setup } = require("../utils/api");
 
 let server;
 
@@ -65,4 +66,15 @@ test("login user by username", async () => {
   );
 
   expect(res.status).toBe(200);
+});
+
+test("my info", async () => {
+  const { user, authAPI } = await setup();
+
+  const data = await authAPI.get(`/auth/me`);
+
+  expect(data).toMatchObject({
+    username: user.username,
+    email: user.email,
+  });
 });
