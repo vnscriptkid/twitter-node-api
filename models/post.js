@@ -11,6 +11,7 @@ const PostSchema = new Schema(
     retweetUsers: [{ type: Schema.Types.ObjectId, ref: "user" }],
     // TODO: better naming originalPost !?
     retweetData: { type: Schema.Types.ObjectId, ref: "post" },
+    replyTo: { type: Schema.Types.ObjectId, ref: "post" },
   },
   { timestamps: true }
 );

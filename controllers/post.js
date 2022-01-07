@@ -40,10 +40,16 @@ exports.show = async (req, res, next) => {
 
 exports.store = async (req, res, next) => {
   try {
+    validationHandler(req);
+
+    const { content, replyTo } = req.body;
+
     const post = new Post({
       content: req.body.content,
       postedBy: req.user,
     });
+
+    if (replyTo) post.replyTo = replyTo;
 
     await post.save();
 
