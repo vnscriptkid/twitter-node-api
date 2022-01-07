@@ -128,15 +128,15 @@ exports.retweet = async (req, res, next) => {
     });
 
     let repost = null;
-    
+
     if (!deleted) {
       repost = await Post.create({
-        postedBy = userId,
-        retweetData = originalPost.id,
+        postedBy: userId,
+        retweetData: originalPost.id,
       });
     }
 
-    const pullOrAdd = deleted ? '$pull' : '$addToSet';
+    const pullOrAdd = deleted ? "$pull" : "$addToSet";
 
     const promise1 = Post.findByIdAndUpdate(originalPost.id, {
       [pullOrAdd]: {
@@ -152,8 +152,9 @@ exports.retweet = async (req, res, next) => {
 
     await Promise.all(promise1, promise2);
 
-    return res.send(200).send({message: deleted ? 'un-retweeted' : 'retweeted'})
-
+    return res
+      .send(200)
+      .send({ message: deleted ? "un-retweeted" : "retweeted" });
   } catch (err) {
     next(err);
   }
