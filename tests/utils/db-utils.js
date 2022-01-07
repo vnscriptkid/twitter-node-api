@@ -12,7 +12,11 @@ function insertUsers() {}
 
 function insertPosts() {}
 
-exports.buildUser = async () => {
+exports.buildUser = buildUser;
+
+exports.buildPost = buildPost;
+
+async function buildUser() {
   const user = await User.create({
     email: faker.internet.email(),
     username: faker.internet.userName(),
@@ -22,4 +26,17 @@ exports.buildUser = async () => {
   });
 
   return user;
-};
+}
+
+async function buildPost(user) {
+  if (!user) {
+    user = await buildUser();
+  }
+
+  const post = await Post.create({
+    content: faker.lorem.sentence(),
+    postedBy: user.id,
+  });
+
+  return post;
+}
