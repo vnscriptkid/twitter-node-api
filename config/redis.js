@@ -19,6 +19,8 @@ module.exports = {
       client = redis.createClient(redisConfig);
 
       client.on("error", (err) => console.log("Redis Client Error", err));
+      client.on("connect", () => console.log("Connecting to redis"));
+      client.on("ready", () => console.log("Redis is ready"));
 
       client.hget = util.promisify(client.HGET);
     }
