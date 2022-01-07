@@ -112,3 +112,51 @@ exports.like = async (req, res, next) => {
     next(err);
   }
 };
+
+// retweet or un-retweet
+exports.retweet = async (req, res, next) => {
+  try {
+    const userId = req.user.id;
+
+    let originalPost = await Post.findById(req.params.id);
+
+    if (!originalPost) throw new PostNotFound();
+
+    const deleted = await Post.findOneAndDelete({
+      postedBy: userId,
+      retweetData: originalPost.id,
+    });
+
+    let repost = null;
+    
+    if (!deleted) {
+      repost = await Post.create({
+        postedBy = userId,
+        retweetData = originalPost.id,
+      });
+    }
+
+    const pullOrAdd = deleted ? '$pull' : '$addToSet';
+
+    const promise1 = Post.findByIdAndUpdate(originalPost.id, {
+      [pullOrAdd]: {
+        retweetUsers: userId,
+      },
+    });
+
+    const promise2 = User.findByIdAndUpdate(userId, {
+      [pullOrAdd]: {
+        retweets: deleted.id,
+      },
+    });
+
+    await Promise.all(promise1, promise2);
+
+    return res.send(200).send({message: deleted ? 'un-retweeted' : 'retweeted'})
+
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.retweet = async (req, res, next) => {};

@@ -20,6 +20,8 @@ router.post(
 
 router.patch("/:id/like", postController.like);
 
+router.patch("/:id/retweet", postController.retweet);
+
 router.patch("/:id", hasDescription, postController.update);
 
 router.delete("/:id", postController.delete);
