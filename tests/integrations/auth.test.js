@@ -1,7 +1,7 @@
 const redis = require("../../config/redis");
 const DbContext = require("../../DbContext");
 const startServer = require("../../startServer");
-const { resetDb } = require("../utils/db-utils");
+const { resetDb, buildUser } = require("../utils/db-utils");
 const axios = require("axios");
 
 let server;
@@ -33,4 +33,36 @@ test("register new user", async () => {
   expect(res.status).toBe(200);
   expect(res.data.user.username).toBe(postData.username);
   expect(typeof res.data.token).toBe("string");
+});
+
+test("login user by email", async () => {
+  const user = await buildUser();
+
+  const loginForm = {
+    emailOrUsername: user.email,
+    password: "123456",
+  };
+
+  const res = await axios.post(
+    `http://localhost:8080/api/auth/login`,
+    loginForm
+  );
+
+  expect(res.status).toBe(200);
+});
+
+test("login user by username", async () => {
+  const user = await buildUser();
+
+  const loginForm = {
+    emailOrUsername: user.username,
+    password: "123456",
+  };
+
+  const res = await axios.post(
+    `http://localhost:8080/api/auth/login`,
+    loginForm
+  );
+
+  expect(res.status).toBe(200);
 });
