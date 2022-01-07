@@ -11,14 +11,17 @@ exports.index = async (req, res, next) => {
     let pageSize = size ? parseInt(size) : 10;
     let currentPage = page ? parseInt(page) : 1;
 
+    // my posts and posts I've retweeted
     const posts = await Post.find({
-      // my posts
       postedBy: { $in: [req.user.id] },
     })
       .skip(pageSize * (currentPage - 1))
       .limit(pageSize)
       .populate("postedBy")
+      .populate("retweetData")
       .sort({ createdAt: -1 });
+
+    await User.populate(posts, "retweetData.postedBy");
 
     return res.send(posts);
   } catch (err) {
