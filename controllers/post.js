@@ -18,10 +18,11 @@ exports.index = async (req, res, next) => {
       .skip(pageSize * (currentPage - 1))
       .limit(pageSize)
       .populate("postedBy")
+      .populate("replyTo")
       .populate("retweetData")
       .sort({ createdAt: -1 });
 
-    await User.populate(posts, "retweetData.postedBy");
+    await User.populate(posts, ["retweetData.postedBy", "replyTo.postedBy"]);
 
     return res.send(posts);
   } catch (err) {
