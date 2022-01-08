@@ -8,5 +8,6 @@ services:
       - 27015:27017
   redis:
     image: "redis:alpine"
+    restart: always
     ports:
-      - "6375:6379"
+      - 6379:6379
