@@ -21,3 +21,35 @@ exports.show = async (req, res, next) => {
     next(err);
   }
 };
+
+exports.follow = async (req, res, next) => {
+  try {
+    const userToFollow = await User.findById(req.params.userId);
+
+    if (!userToFollow) throw new UserNotFound();
+
+    const isFollowingNow =
+      userToFollow.followers && userToFollow.followers.includes(req.user._id);
+
+    const operation = isFollowingNow ? "$pull" : "$addToSet";
+
+    const promise1 = User.findByIdAndUpdate(req.user.id, {
+      [operation]: {
+        followings: userToFollow.id,
+      },
+    });
+
+    const promise2 = User.findByIdAndUpdate(userToFollow.id, {
+      [operation]: {
+        followers: req.user.id,
+      },
+    });
+
+    // TODO: use transaction here
+    await Promise.all([promise1, promise2]);
+
+    return res.send({ message: isFollowingNow ? "unfollowed" : "followed" });
+  } catch (err) {
+    next(err);
+  }
+};
