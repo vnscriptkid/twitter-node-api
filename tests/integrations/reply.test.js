@@ -3,6 +3,7 @@ const DbContext = require("../../DbContext");
 const startServer = require("../../startServer");
 const { resetDb, buildPost, buildUser } = require("../utils/db-utils");
 const { setup } = require("../utils/api");
+const Post = require("../../models/Post");
 
 let server;
 
@@ -43,4 +44,40 @@ test("replies to someone's post", async () => {
       _id: user.id,
     },
   });
+});
+
+test("replyTo is populated for index route", async () => {
+  /* Arrange */
+  const { user: userA, authAPI } = await setup();
+
+  const userB = await buildUser();
+  const postOfUserB = await buildPost(userB);
+
+  // userA replies on post of user B
+  const replyOfUserAtoB = await Post.create({
+    content: "reply of A to B",
+    postedBy: userA.id,
+    replyTo: postOfUserB.id,
+  });
+
+  /* Action */
+  const data = await authAPI.get("/posts");
+
+  /* Assert */
+  expect(data).toMatchObject([
+    {
+      _id: replyOfUserAtoB.id,
+      content: replyOfUserAtoB.content,
+      postedBy: {
+        _id: userA.id,
+      },
+      replyTo: {
+        _id: postOfUserB.id,
+        content: postOfUserB.content,
+        postedBy: {
+          _id: userB.id,
+        },
+      },
+    },
+  ]);
 });
