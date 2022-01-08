@@ -9,7 +9,7 @@
     "db:down": "docker-compose down",
     "redis": "docker exec -it 46cadfd1571e_twitter-clone-node_redis_1 redis-cli",
     "mongo": "docker exec -it twitter-clone-node_mongo_1 mongo",
-    "test": "jest --runInBand"
+    "test": "jest --runInBand --watchAll"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
