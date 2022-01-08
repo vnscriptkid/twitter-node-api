@@ -32,10 +32,19 @@ exports.index = async (req, res, next) => {
 
 exports.show = async (req, res, next) => {
   try {
-    const post = await Post.findOne({ _id: req.params.id }).populate(
+    const postData = await Post.findOne({ _id: req.params.id }).populate(
       "postedBy"
     );
-    return res.send(post);
+
+    const result = { postData };
+
+    if (postData.replyTo) {
+      result.replyTo = postData.replyTo;
+    }
+
+    result.replies = await Post.find({ replyTo: postData.id });
+
+    return res.send(result);
   } catch (err) {
     next(err);
   }
