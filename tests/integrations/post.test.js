@@ -3,6 +3,7 @@ const DbContext = require("../../DbContext");
 const startServer = require("../../startServer");
 const { resetDb, buildPost, buildUser } = require("../utils/db-utils");
 const { setup } = require("../utils/api");
+const Post = require("../../models/Post");
 
 let server;
 
@@ -67,5 +68,41 @@ test("show all posts", async () => {
   expect(olderPost).toMatchObject({
     _id: postOfUserA.id,
     content: postOfUserA.content,
+  });
+});
+
+test("show a single post", async () => {
+  /* Arrange */
+  const { user: user0, authAPI } = await setup();
+
+  const post = await Post.create({
+    content: "example post",
+    postedBy: user0.id,
+  });
+
+  const user1 = await buildUser();
+  const reply1 = await Post.create({
+    content: "reply 1 to post",
+    postedBy: user1.id,
+    replyTo: post.id,
+  });
+
+  const user2 = await buildUser();
+  const reply2 = await Post.create({
+    content: "reply 2 to post",
+    postedBy: user2.id,
+    replyTo: post.id,
+  });
+
+  /* Action */
+  const data = await authAPI.get(`/posts/${post.id}`);
+
+  /* Assert */
+  expect(data).toMatchObject({
+    _id: post.id,
+    content: post.content,
+    postedBy: {
+      _id: user0.id,
+    },
   });
 });
