@@ -32,7 +32,9 @@ exports.index = async (req, res, next) => {
 
 exports.show = async (req, res, next) => {
   try {
-    const post = await Post.findOne({ _id: req.params.id }).populate("user");
+    const post = await Post.findOne({ _id: req.params.id }).populate(
+      "postedBy"
+    );
     return res.send(post);
   } catch (err) {
     next(err);
