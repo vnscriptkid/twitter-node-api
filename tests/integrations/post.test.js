@@ -99,10 +99,13 @@ test("show a single post", async () => {
 
   /* Assert */
   expect(data).toMatchObject({
-    _id: post.id,
-    content: post.content,
-    postedBy: {
-      _id: user0.id,
+    postData: {
+      _id: post.id,
+      content: post.content,
+      postedBy: {
+        _id: user0.id,
+      },
     },
+    replies: [{ _id: reply1.id }, { _id: reply2.id }],
   });
 });
