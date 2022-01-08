@@ -8,7 +8,20 @@ const uploadImage = require("../middlewares/multer");
 const Post = require("../models/Post");
 const { hasDescription } = require("../validations/validators");
 
-router.get("/", postController.index);
+router.get(
+  "/",
+  checkSchema({
+    postedBy: {
+      in: "query",
+      optional: true,
+    },
+    replyTo: {
+      in: "query",
+      optional: true,
+    },
+  }),
+  postController.index
+);
 
 router.get("/:id", postController.show);
 
@@ -28,10 +41,6 @@ router.post(
           if (!post) return Promise.reject("Post not found.");
         },
       },
-    },
-    postedBy: {
-      in: "query",
-      optional: true,
     },
   }),
   postController.store
