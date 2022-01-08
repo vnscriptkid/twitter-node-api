@@ -71,6 +71,21 @@ test("show all posts", async () => {
   });
 });
 
+test("show posts by given postedBy in query", async () => {
+  const { user, authAPI } = await setup();
+
+  const someone = await buildUser();
+  const postOfSomeone = await buildPost(someone);
+
+  const data = await authAPI(`/posts?postedBy=${someone.id}`);
+
+  expect(data).toMatchObject([
+    {
+      _id: postOfSomeone.id,
+    },
+  ]);
+});
+
 test("show a single post", async () => {
   /* Arrange */
   const { user: user0, authAPI } = await setup();
