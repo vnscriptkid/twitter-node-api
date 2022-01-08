@@ -3,7 +3,7 @@ const { checkSchema } = require("express-validator");
 const router = express.Router();
 
 const authController = require("../controllers/auth");
-const User = require("../models/user");
+const User = require("../models/User");
 const passportJwt = require("../middlewares/passportJwt")();
 
 router.post("/login", authController.login);

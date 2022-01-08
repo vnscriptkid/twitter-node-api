@@ -1,6 +1,6 @@
 const redisClient = require("../config/redis").getClient();
 const UserNotFound = require("../errors/UserNotFound");
-const User = require("../models/user");
+const User = require("../models/User");
 
 exports.follow = async (req, res, next) => {
   try {

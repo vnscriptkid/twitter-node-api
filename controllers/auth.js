@@ -2,7 +2,7 @@ const jwt = require("jwt-simple");
 
 const config = require("../config");
 const InvalidCredentials = require("../errors/InvalidCredentials");
-const User = require("../models/user");
+const User = require("../models/User");
 const validationHandler = require("../validations/validationHandler");
 const redisClient = require("../config/redis").getClient();
 

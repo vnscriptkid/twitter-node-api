@@ -1,7 +1,7 @@
 const PostNotFound = require("../errors/PostNotFound");
 const Unauthorized = require("../errors/Unauthorized");
-const Post = require("../models/post");
-const User = require("../models/user");
+const Post = require("../models/Post");
+const User = require("../models/User");
 const validationHandler = require("../validations/validationHandler");
 
 exports.index = async (req, res, next) => {
