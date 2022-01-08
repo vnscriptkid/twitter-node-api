@@ -29,3 +29,16 @@ test("get user details by username", async () => {
     _id: otherUser.id,
   });
 });
+
+test("get user details by user id", async () => {
+  const { authAPI } = await setup();
+  const otherUser = await buildUser();
+
+  const data = await authAPI.get(
+    `http://localhost:8080/api/users/${otherUser.id}`
+  );
+
+  expect(data).toMatchObject({
+    _id: otherUser.id,
+  });
+});
