@@ -61,7 +61,7 @@ test("replyTo is populated for index route", async () => {
   });
 
   /* Action */
-  const data = await authAPI.get("/posts");
+  const data = await authAPI.get("/posts?replyTo=true");
 
   /* Assert */
   expect(data).toMatchObject([
