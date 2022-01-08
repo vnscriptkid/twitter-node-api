@@ -6,16 +6,20 @@ const validationHandler = require("../validations/validationHandler");
 
 exports.index = async (req, res, next) => {
   try {
-    let { size, page, postedBy } = req.query;
+    validationHandler(req);
+
+    let { size, page, postedBy, replyTo } = req.query;
 
     let pageSize = size ? parseInt(size) : 10;
     let currentPage = page ? parseInt(page) : 1;
 
     const userId = postedBy || req.user.id;
+    const showPostWithReplyTo = replyTo === "true";
 
     // my posts and posts I've retweeted
     const posts = await Post.find({
       postedBy: { $in: [userId] },
+      replyTo: { $exists: showPostWithReplyTo },
     })
       .skip(pageSize * (currentPage - 1))
       .limit(pageSize)
