@@ -6,14 +6,16 @@ const validationHandler = require("../validations/validationHandler");
 
 exports.index = async (req, res, next) => {
   try {
-    let { size, page } = req.query;
+    let { size, page, postedBy } = req.query;
 
     let pageSize = size ? parseInt(size) : 10;
     let currentPage = page ? parseInt(page) : 1;
 
+    const userId = postedBy || req.user.id;
+
     // my posts and posts I've retweeted
     const posts = await Post.find({
-      postedBy: { $in: [req.user.id] },
+      postedBy: { $in: [userId] },
     })
       .skip(pageSize * (currentPage - 1))
       .limit(pageSize)

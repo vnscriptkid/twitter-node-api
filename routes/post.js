@@ -29,6 +29,10 @@ router.post(
         },
       },
     },
+    postedBy: {
+      in: "query",
+      optional: true,
+    },
   }),
   postController.store
 );
