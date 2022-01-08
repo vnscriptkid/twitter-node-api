@@ -92,15 +92,14 @@ exports.update = async (req, res, next) => {
 
 exports.delete = async (req, res, next) => {
   try {
-    const post = await Post.findById(req.params.id);
+    const deleted = await Post.findOneAndDelete({
+      _id: req.params.id,
+      postedBy: req.user.id,
+    });
 
-    if (!post) throw new PostNotFound();
+    if (!deleted) throw new PostNotFound();
 
-    if (!post.user.equals(req.user.id)) throw new Unauthorized();
-
-    await post.delete();
-
-    return res.send({ message: "success" });
+    return res.send({ message: "deleted" });
   } catch (err) {
     next(err);
   }
