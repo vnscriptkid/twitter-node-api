@@ -109,3 +109,32 @@ test("show a single post", async () => {
     replies: [{ _id: reply1.id }, { _id: reply2.id }],
   });
 });
+
+describe("delete a post", () => {
+  test("happy case", async () => {
+    const { user, authAPI } = await setup();
+
+    const post = await buildPost(user);
+
+    const data = await authAPI.delete(`/posts/${post.id}`);
+
+    expect(data).toMatchObject({
+      message: "deleted",
+    });
+
+    const numOfPosts = await Post.countDocuments({});
+    expect(numOfPosts).toBe(0);
+  });
+
+  test("can not delete if not the author", async () => {
+    const { authAPI } = await setup();
+
+    const postOfSomeone = await buildPost();
+
+    const res = await authAPI
+      .delete(`/posts/${postOfSomeone.id}`)
+      .catch((e) => e);
+
+    expect(res.status).toBe(404);
+  });
+});
