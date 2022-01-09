@@ -28,3 +28,15 @@ exports.store = async (req, res, next) => {
     next(err);
   }
 };
+
+exports.index = async (req, res, next) => {
+  try {
+    const chats = await Chat.find({
+      users: { $elemMatch: { $eq: req.user.id } },
+    });
+
+    res.send(chats);
+  } catch (err) {
+    next(err);
+  }
+};
