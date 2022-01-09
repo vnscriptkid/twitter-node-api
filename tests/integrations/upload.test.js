@@ -55,3 +55,21 @@ test("upload profile pic", async () => {
 
   expect(userNow.profilePic).toBe("sample");
 });
+
+test("upload cover photo", async () => {
+  const { user, authAPI } = await setup();
+
+  const myCoverPhoto = Buffer.from("whatever");
+
+  const data = await authAPI.patch(`/users/coverPhoto`, {
+    image: myCoverPhoto,
+  });
+
+  expect(data).toMatchObject({
+    message: "uploaded",
+  });
+
+  const userNow = await User.findById(user);
+
+  expect(userNow.coverPhoto).toBe("sample");
+});
