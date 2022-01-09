@@ -14,7 +14,14 @@ router.patch(
   "/profilePic",
   passportJwt.authenticate(),
   uploadImage("profiles").single("image"),
-  userController.uploadProfile
+  userController.uploadProfilePicture
+);
+
+router.patch(
+  "/coverPhoto",
+  passportJwt.authenticate(),
+  uploadImage("profiles").single("image"),
+  userController.uploadCoverPhoto
 );
 
 module.exports = router;
