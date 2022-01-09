@@ -171,7 +171,29 @@ describe("update a post", () => {
     });
   });
 
-  test("un-pin other posts", async () => {
+  test("un-pin one post myself", async () => {
+    /* Arrange */
+    const { user, authAPI } = await setup();
+
+    const post = await buildPost(user);
+
+    await authAPI.patch(`/posts/${post.id}`, {
+      pinned: true,
+    });
+
+    /* Action */
+    const data = await authAPI.patch(`/posts/${post.id}`, {
+      pinned: false,
+    });
+
+    /* Assert */
+    expect(data).toMatchObject({
+      _id: post.id,
+      pinned: false,
+    });
+  });
+
+  test("un-pin other posts by pin one post", async () => {
     /* Arrange */
     const { user, authAPI } = await setup();
 
