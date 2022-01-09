@@ -1,4 +1,5 @@
 const faker = require("faker");
+const Chat = require("../../models/Chat");
 const Post = require("../../models/Post");
 const User = require("../../models/User");
 const { hashPassword } = require("../../utils/auth");
@@ -6,6 +7,7 @@ const { hashPassword } = require("../../utils/auth");
 exports.resetDb = async () => {
   await User.deleteMany({});
   await Post.deleteMany({});
+  await Chat.deleteMany({});
 };
 
 function insertUsers() {}
