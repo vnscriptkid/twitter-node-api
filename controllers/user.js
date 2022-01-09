@@ -53,3 +53,15 @@ exports.follow = async (req, res, next) => {
     next(err);
   }
 };
+
+exports.uploadProfile = async (req, res, next) => {
+  try {
+    await User.findByIdAndUpdate(req.user.id, {
+      profilePic: req.file.filename,
+    });
+
+    return res.send({ message: "uploaded" });
+  } catch (err) {
+    next(err);
+  }
+};

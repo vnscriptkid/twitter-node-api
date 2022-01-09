@@ -4,7 +4,6 @@ const { isValidObjectId } = require("mongoose");
 const router = express.Router();
 
 const postController = require("../controllers/post");
-const uploadImage = require("../middlewares/multer");
 const Post = require("../models/Post");
 const { hasDescription } = require("../validations/validators");
 
