@@ -7,6 +7,8 @@ const postRoutes = require("./routes/post");
 const authRoutes = require("./routes/auth");
 const followRoutes = require("./routes/follow");
 const userRoutes = require("./routes/user");
+const chatRoutes = require("./routes/chat");
+
 const errorHandler = require("./middlewares/errorHandler");
 const passportJwt = require("./middlewares/passportJwt")();
 
@@ -34,6 +36,7 @@ const startServer = ({ port = process.env.PORT } = {}) => {
   app.use("/api/auth", authRoutes);
   app.use("/api/follow", passportJwt.authenticate(), followRoutes);
   app.use("/api/users", passportJwt.authenticate(), userRoutes);
+  app.use("/api/chat", passportJwt.authenticate(), chatRoutes);
 
   app.use(errorHandler);
 
