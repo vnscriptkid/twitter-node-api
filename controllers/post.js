@@ -9,7 +9,7 @@ exports.index = async (req, res, next) => {
   try {
     validationHandler(req);
 
-    let { size, page, postedBy, replyTo } = req.query;
+    let { size, page, postedBy, replyTo, search } = req.query;
 
     let pageSize = size ? parseInt(size) : 10;
     let currentPage = page ? parseInt(page) : 1;
@@ -18,10 +18,16 @@ exports.index = async (req, res, next) => {
     const showPostWithReplyTo = replyTo === "true";
 
     // my posts and posts I've retweeted
-    const posts = await Post.find({
+    const searchObj = {
       postedBy: { $in: [userId] },
       replyTo: { $exists: showPostWithReplyTo },
-    })
+    };
+
+    if (search) {
+      searchObj.content = { $regex: search, $options: "i" };
+    }
+
+    const posts = await Post.find(searchObj)
       .skip(pageSize * (currentPage - 1))
       .limit(pageSize)
       .populate("postedBy")

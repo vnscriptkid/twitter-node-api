@@ -18,6 +18,11 @@ router.get(
       in: "query",
       optional: true,
     },
+    search: {
+      in: "query",
+      optional: true,
+      isString: true,
+    },
   }),
   postController.index
 );
