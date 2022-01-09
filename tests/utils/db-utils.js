@@ -28,7 +28,7 @@ async function buildUser() {
   return user;
 }
 
-async function buildPost(user) {
+async function buildPost(user, props = {}) {
   if (!user) {
     user = await buildUser();
   }
@@ -36,6 +36,7 @@ async function buildPost(user) {
   const post = await Post.create({
     content: faker.lorem.sentence(),
     postedBy: user.id,
+    ...props,
   });
 
   return post;
