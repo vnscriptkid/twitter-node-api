@@ -153,3 +153,55 @@ describe("delete a post", () => {
     expect(res.status).toBe(404);
   });
 });
+
+describe("update a post", () => {
+  test("pin my post", async () => {
+    const { user, authAPI } = await setup();
+
+    const post1 = await buildPost(user);
+    const post2 = await buildPost(user);
+
+    const data = await authAPI.patch(`/posts/${post2.id}`, {
+      pinned: true,
+    });
+
+    expect(data).toMatchObject({
+      _id: post2.id,
+      pinned: true,
+    });
+  });
+
+  test("un-pin other posts", async () => {
+    /* Arrange */
+    const { user, authAPI } = await setup();
+
+    const post1 = await buildPost(user);
+    const post2 = await buildPost(user);
+
+    await authAPI.patch(`/posts/${post2.id}`, {
+      pinned: true,
+    });
+    /* Action */
+    const data = await authAPI.patch(`/posts/${post1.id}`, {
+      pinned: true,
+    });
+
+    /* Assert */
+    expect(data).toMatchObject({
+      _id: post1.id,
+      pinned: true,
+    });
+
+    const posts = await Post.find({ postedBy: user.id });
+    expect(posts).toMatchObject([
+      {
+        _id: post1._id,
+        pinned: true,
+      },
+      {
+        _id: post2._id,
+        pinned: false,
+      },
+    ]);
+  });
+});
