@@ -49,7 +49,17 @@ router.patch("/:id/like", postController.like);
 
 router.patch("/:id/retweet", postController.retweet);
 
-router.patch("/:id", hasDescription, postController.update);
+router.patch(
+  "/:id",
+  checkSchema({
+    pinned: {
+      in: "body",
+      optional: true,
+      isBoolean: true,
+    },
+  }),
+  postController.update
+);
 
 router.delete("/:id", postController.delete);
 

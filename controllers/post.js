@@ -1,3 +1,4 @@
+const { matchedData } = require("express-validator");
 const PostNotFound = require("../errors/PostNotFound");
 const Unauthorized = require("../errors/Unauthorized");
 const Post = require("../models/Post");
@@ -81,13 +82,22 @@ exports.update = async (req, res, next) => {
   try {
     validationHandler(req);
 
+    // take only fields that exist in schema
+    const bodyData = matchedData(req, { locations: ["body"] });
+
     const post = await Post.findById(req.params.id);
 
     if (!post) throw new PostNotFound();
 
-    if (!post.user.equals(req.user.id)) throw new Unauthorized();
+    if (!post.postedBy.equals(req.user.id)) throw new Unauthorized();
 
-    post.description = req.body.description;
+    Object.assign(post, bodyData);
+
+    if (bodyData.pinned === true) {
+      // need to un-pin all other posts of mine
+      await Post.updateMany({ postedBy: req.user.id }, { pinned: false });
+    }
+
     await post.save();
 
     return res.send(post);
