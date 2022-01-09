@@ -33,7 +33,7 @@ exports.index = async (req, res, next) => {
   try {
     const chats = await Chat.find({
       users: { $elemMatch: { $eq: req.user.id } },
-    });
+    }).populate("users");
 
     res.send(chats);
   } catch (err) {
