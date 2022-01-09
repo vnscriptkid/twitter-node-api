@@ -18,6 +18,8 @@ exports.buildUser = buildUser;
 
 exports.buildPost = buildPost;
 
+exports.buildChatGroup = buildChatGroup;
+
 async function buildUser(props = {}) {
   const user = await User.create({
     email: faker.internet.email(),
@@ -43,4 +45,17 @@ async function buildPost(user, props = {}) {
   });
 
   return post;
+}
+
+async function buildChatGroup(users) {
+  if (!users) {
+    await Promise.all(Array(2).map(() => buildUser()));
+  }
+
+  const chatGroup = await Chat.create({
+    isGroupChat: true,
+    users,
+  });
+
+  return chatGroup;
 }

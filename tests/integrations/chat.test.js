@@ -1,7 +1,7 @@
 const redis = require("../../config/redis");
 const DbContext = require("../../DbContext");
 const startServer = require("../../startServer");
-const { resetDb, buildUser } = require("../utils/db-utils");
+const { resetDb, buildUser, buildChatGroup } = require("../utils/db-utils");
 const { setup } = require("../utils/api");
 const Chat = require("../../models/Chat");
 const mongoose = require("mongoose");
@@ -16,9 +16,9 @@ beforeAll(async () => {
 
 afterAll(() => server.close());
 
-describe("chat group", () => {
-  beforeEach(() => resetDb());
+beforeEach(() => resetDb());
 
+describe("chat group", () => {
   test("create a chat group", async () => {
     const { user: user1, authAPI } = await setup();
 
@@ -56,5 +56,27 @@ describe("chat group", () => {
       .catch((e) => e);
 
     expect(res.status).toBe(404);
+  });
+});
+
+describe("get chat group", () => {
+  test("get all of my chat group", async () => {
+    const { user: me, authAPI } = await setup();
+
+    const user2 = await buildUser();
+
+    const myChatGroup = buildChatGroup([me, user2]);
+    const someoneChatGroup = buildChatGroup();
+
+    const data = await authAPI.get(`/chat`);
+
+    expect(data).toMatchObject([
+      {
+        users: [me._id, user2._id],
+      },
+    ]);
+
+    const allChatGroups = await Chat.countDocuments();
+    expect(allChatGroups).toBe(2);
   });
 });
