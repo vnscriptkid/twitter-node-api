@@ -16,13 +16,14 @@ exports.buildUser = buildUser;
 
 exports.buildPost = buildPost;
 
-async function buildUser() {
+async function buildUser(props = {}) {
   const user = await User.create({
     email: faker.internet.email(),
     username: faker.internet.userName(),
     firstName: faker.name.firstName(),
     lastName: faker.name.lastName(),
     password: await hashPassword("123456"),
+    ...props,
   });
 
   return user;

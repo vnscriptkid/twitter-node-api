@@ -33,3 +33,27 @@ test("search posts", async () => {
     },
   ]);
 });
+
+test("search users", async () => {
+  const { user: user1, authAPI } = await setup();
+
+  const user2 = await buildUser({ firstName: "Thanh" });
+  const user3 = await buildUser({ lastName: "THANH" });
+  const user4 = await buildUser({ username: "thanhtrung" });
+  const user5 = await buildUser();
+
+  const data = await authAPI.get(`/users?search=thanh`);
+
+  expect(data).toHaveLength(3);
+  expect(data).toMatchObject([
+    {
+      _id: user2.id,
+    },
+    {
+      _id: user3.id,
+    },
+    {
+      _id: user4.id,
+    },
+  ]);
+});
