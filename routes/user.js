@@ -5,6 +5,18 @@ const passportJwt = require("../middlewares/passportJwt")();
 const router = express.Router();
 
 const userController = require("../controllers/user");
+const { checkSchema } = require("express-validator");
+
+router.get(
+  "/",
+  checkSchema({
+    search: {
+      in: "query",
+      isString: true,
+    },
+  }),
+  userController.index
+);
 
 router.get("/:usernameOrId", userController.show);
 

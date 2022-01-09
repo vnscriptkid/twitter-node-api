@@ -1,6 +1,7 @@
 const User = require("../models/User");
 const UserNotFound = require("../errors/UserNotFound");
 const { isValidObjectId } = require("mongoose");
+const validationHandler = require("../validations/validationHandler");
 
 exports.show = async (req, res, next) => {
   try {
@@ -73,6 +74,30 @@ exports.uploadCoverPhoto = async (req, res, next) => {
     });
 
     return res.send({ message: "uploaded" });
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.index = async (req, res, next) => {
+  try {
+    validationHandler(req);
+
+    const { search } = req.query;
+
+    const searchObj = {};
+
+    if (search) {
+      searchObj.$or = [
+        { firstName: { $regex: search, $options: "i" } },
+        { lastName: { $regex: search, $options: "i" } },
+        { username: { $regex: search, $options: "i" } },
+      ];
+    }
+
+    const users = await User.find(searchObj);
+
+    return res.send(users);
   } catch (err) {
     next(err);
   }
