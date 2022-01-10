@@ -35,8 +35,9 @@ exports.index = async (req, res, next) => {
   try {
     const chats = await Chat.find({
       users: { $elemMatch: { $eq: req.user.id } },
-    }).populate("users");
-
+    })
+      .populate("users")
+      .sort({ updatedAt: "desc" });
     res.send(chats);
   } catch (err) {
     next(err);
