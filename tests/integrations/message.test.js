@@ -32,8 +32,12 @@ describe("send message", () => {
 
     expect(data).toMatchObject({
       content: "hello",
-      chat: chat.id,
-      sender: user1.id,
+      chat: {
+        _id: chat.id,
+      },
+      sender: {
+        _id: user1.id,
+      },
     });
   });
 
