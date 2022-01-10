@@ -111,3 +111,80 @@ describe("get chat group", () => {
     expect(res.status).toBe(404);
   });
 });
+
+describe("private chat group", () => {
+  test("create a private chat if it does not exist", async () => {
+    /* Arrange */
+    let numOfChat = await Chat.countDocuments();
+    expect(numOfChat).toBe(0);
+
+    const { user: me, authAPI } = await setup();
+
+    const user2 = await buildUser();
+
+    /* Action */
+    const data = await authAPI.get(`/chat/private/${user2.id}`);
+
+    /* Assert */
+    expect(data).toMatchObject({
+      isGroupChat: false,
+      users: [{ _id: me.id }, { _id: user2.id }],
+    });
+  });
+
+  test("do not create chat if private chat does exist", async () => {
+    /* Arrange */
+    let numOfChat = await Chat.countDocuments();
+    expect(numOfChat).toBe(0);
+
+    const { user: me, authAPI } = await setup();
+    const user2 = await buildUser();
+
+    const privateChat = await Chat.create({
+      isGroupChat: false,
+      users: [me.id, user2.id],
+    });
+
+    /* Action */
+    const data = await authAPI.get(`/chat/private/${user2.id}`);
+
+    /* Assert */
+    expect(data).toMatchObject({
+      isGroupChat: false,
+      users: [{ _id: me.id }, { _id: user2.id }],
+    });
+
+    numOfChat = await Chat.countDocuments();
+    expect(numOfChat).toBe(1);
+  });
+
+  test("returns 422 if userid is wrong", async () => {
+    /* Arrange */
+
+    const { user: me, authAPI } = await setup();
+
+    /* Action */
+    const res = await authAPI
+      .get(`/chat/private/wrong-user-id`)
+      .catch((e) => e);
+
+    /* Assert */
+    expect(res).toMatchObject({
+      status: 422,
+    });
+  });
+
+  test("returns 422 if userid is of myself", async () => {
+    /* Arrange */
+
+    const { user: me, authAPI } = await setup();
+
+    /* Action */
+    const res = await authAPI.get(`/chat/private/${me.id}`).catch((e) => e);
+
+    /* Assert */
+    expect(res).toMatchObject({
+      status: 422,
+    });
+  });
+});
