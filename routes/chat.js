@@ -30,6 +30,22 @@ router.post(
 /* Get all of my chat groups */
 router.get("/", passportJwt.authenticate(), chatController.index);
 
+/* Update a single chat */
+router.patch(
+  "/:id",
+  passportJwt.authenticate(),
+  checkSchema({
+    chatName: {
+      in: "body",
+      isString: true,
+      optional: true,
+      trim: true,
+      notEmpty: true,
+    },
+  }),
+  chatController.update
+);
+
 /* Get a single chat group by id */
 router.get("/:id", passportJwt.authenticate(), chatController.show);
 

@@ -4,6 +4,7 @@ const { matchedData } = require("express-validator");
 const User = require("../models/User");
 const UserNotFound = require("../errors/UserNotFound");
 const ChatNotFound = require("../errors/ChatNotFound");
+const ServerError = require("../errors/ServerError");
 const mongoose = require("mongoose");
 
 exports.store = async (req, res, next) => {
@@ -54,6 +55,24 @@ exports.show = async (req, res, next) => {
     if (!chat) throw new ChatNotFound();
 
     res.send(chat);
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.update = async (req, res, next) => {
+  try {
+    validationHandler(req);
+
+    const bodyData = matchedData(req);
+
+    const chat = await Chat.findByIdAndUpdate(req.params.id, bodyData, {
+      new: true,
+    });
+
+    if (!chat) throw new ServerError(`Failed to update chat #${req.params.id}`);
+
+    return res.send({ message: "updated" });
   } catch (err) {
     next(err);
   }
