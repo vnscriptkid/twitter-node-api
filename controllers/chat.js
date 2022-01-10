@@ -4,6 +4,7 @@ const { matchedData } = require("express-validator");
 const User = require("../models/User");
 const UserNotFound = require("../errors/UserNotFound");
 const ChatNotFound = require("../errors/ChatNotFound");
+const mongoose = require("mongoose");
 
 exports.store = async (req, res, next) => {
   try {
@@ -52,6 +53,41 @@ exports.show = async (req, res, next) => {
     if (!chat) throw new ChatNotFound();
 
     res.send(chat);
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.private = async (req, res, next) => {
+  try {
+    validationHandler(req);
+
+    const chat = await Chat.findOneAndUpdate(
+      {
+        // filter
+        isGroupChat: false,
+        users: {
+          $size: 2,
+          $all: [
+            { $elemMatch: { $eq: mongoose.Types.ObjectId(req.user.id) } },
+            { $elemMatch: { $eq: mongoose.Types.ObjectId(req.params.userId) } },
+          ],
+        },
+      },
+      {
+        // update
+        $setOnInsert: {
+          isGroupChat: false,
+          users: [req.user.id, req.params.userId],
+        },
+      },
+      {
+        new: true, // by default returns old doc
+        upsert: true, // if not found then insert
+      }
+    ).populate("users");
+
+    return res.send(chat);
   } catch (err) {
     next(err);
   }
