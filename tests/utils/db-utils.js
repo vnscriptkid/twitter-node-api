@@ -47,7 +47,7 @@ async function buildPost(user, props = {}) {
   return post;
 }
 
-async function buildChatGroup(users) {
+async function buildChatGroup(users, props = {}) {
   if (!users) {
     await Promise.all(Array(2).map(() => buildUser()));
   }
@@ -55,6 +55,7 @@ async function buildChatGroup(users) {
   const chatGroup = await Chat.create({
     isGroupChat: true,
     users,
+    ...props,
   });
 
   return chatGroup;

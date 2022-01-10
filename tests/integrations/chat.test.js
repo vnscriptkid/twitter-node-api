@@ -110,6 +110,24 @@ describe("get chat group", () => {
 
     expect(res.status).toBe(404);
   });
+
+  test("my chat groups are sorted by updatedAt in desc", async () => {
+    const { user: user1, authAPI } = await setup();
+    const user2 = await buildUser();
+    const user3 = await buildUser();
+
+    const chat1 = await buildChatGroup([user1, user2]);
+    const chat2 = await buildChatGroup([user1, user3]);
+    const chat3 = await buildChatGroup([user1, user2, user3]);
+
+    const data = await authAPI.get(`/chat`);
+
+    expect(data).toMatchObject([
+      { _id: chat3.id },
+      { _id: chat2.id },
+      { _id: chat1.id },
+    ]);
+  });
 });
 
 describe("private chat group", () => {
