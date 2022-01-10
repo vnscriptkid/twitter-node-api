@@ -8,11 +8,13 @@ exports.store = async (req, res, next) => {
 
     const { chatId, content } = matchedData(req);
 
-    const message = await Message.create({
+    let message = await Message.create({
       chat: chatId,
       content,
       sender: req.user.id,
     });
+
+    message = await message.populate(["sender", "chat"]);
 
     return res.send(message);
   } catch (err) {
