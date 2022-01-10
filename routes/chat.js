@@ -29,4 +29,7 @@ router.post(
 /* Get all of my chat groups */
 router.get("/", passportJwt.authenticate(), chatController.index);
 
+/* Get a single chat group by id */
+router.get("/:id", passportJwt.authenticate(), chatController.show);
+
 module.exports = router;

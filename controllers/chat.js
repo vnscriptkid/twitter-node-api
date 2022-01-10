@@ -3,6 +3,7 @@ const Chat = require("../models/Chat");
 const { matchedData } = require("express-validator");
 const User = require("../models/User");
 const UserNotFound = require("../errors/UserNotFound");
+const ChatNotFound = require("../errors/ChatNotFound");
 
 exports.store = async (req, res, next) => {
   try {
@@ -36,6 +37,21 @@ exports.index = async (req, res, next) => {
     }).populate("users");
 
     res.send(chats);
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.show = async (req, res, next) => {
+  try {
+    const chat = await Chat.findOne({
+      users: { $elemMatch: { $eq: req.user.id } },
+      _id: req.params.id,
+    }).populate("users");
+
+    if (!chat) throw new ChatNotFound();
+
+    res.send(chat);
   } catch (err) {
     next(err);
   }
