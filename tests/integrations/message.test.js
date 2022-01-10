@@ -36,4 +36,34 @@ describe("send message", () => {
       sender: user1.id,
     });
   });
+
+  test("send message to someone else group returns 422", async () => {
+    const { user: user1, authAPI } = await setup();
+
+    const user2 = await buildUser();
+    const user3 = await buildUser();
+    const someoneElseChat = await buildChatGroup([user3, user2]);
+
+    const res = await authAPI
+      .post(`/message`, {
+        content: "hello",
+        chatId: someoneElseChat.id,
+      })
+      .catch((e) => e);
+
+    expect(res.status).toBe(422);
+  });
+
+  test("send message with wrong chat id returns 422", async () => {
+    const { user, authAPI } = await setup();
+
+    const res = await authAPI
+      .post(`/message`, {
+        content: "hello",
+        chatId: "invalid-chat-id",
+      })
+      .catch((e) => e);
+
+    expect(res.status).toBe(422);
+  });
 });

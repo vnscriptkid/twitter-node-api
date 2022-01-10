@@ -1,5 +1,6 @@
 const faker = require("faker");
 const Chat = require("../../models/Chat");
+const Message = require("../../models/Message");
 const Post = require("../../models/Post");
 const User = require("../../models/User");
 const { hashPassword } = require("../../utils/auth");
@@ -8,6 +9,7 @@ exports.resetDb = async () => {
   await User.deleteMany({});
   await Post.deleteMany({});
   await Chat.deleteMany({});
+  await Message.deleteMany({});
 };
 
 function insertUsers() {}
