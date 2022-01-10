@@ -194,7 +194,6 @@ describe("private chat group", () => {
 
   test("returns 422 if userid is of myself", async () => {
     /* Arrange */
-
     const { user: me, authAPI } = await setup();
 
     /* Action */
@@ -204,5 +203,48 @@ describe("private chat group", () => {
     expect(res).toMatchObject({
       status: 422,
     });
+  });
+});
+
+describe("update chat", () => {
+  test("update chat group name", async () => {
+    const { user: me, authAPI } = await setup();
+    const user2 = await buildUser();
+
+    const chat = await Chat.create({
+      isGroupChat: true,
+      users: [me.id, user2.id],
+    });
+
+    /* Action */
+    const data = await authAPI.patch(`/chat/${chat.id}`, {
+      chatName: "new name",
+    });
+
+    expect(data).toMatchObject({ message: "updated" });
+    const chatInDb = await Chat.findById(chat);
+
+    expect(chatInDb).toMatchObject({
+      chatName: "new name",
+    });
+  });
+
+  test("returns 500 if chat id is wrong", async () => {
+    const { user: me, authAPI } = await setup();
+    const user2 = await buildUser();
+
+    const chat = await Chat.create({
+      isGroupChat: true,
+      users: [me.id, user2.id],
+    });
+
+    /* Action */
+    const res = await authAPI
+      .patch(`/chat/wrong-chat-id`, {
+        chatName: "new name",
+      })
+      .catch((e) => e);
+
+    expect(res.status).toBe(500);
   });
 });
