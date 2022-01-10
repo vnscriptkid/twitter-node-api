@@ -65,8 +65,8 @@ describe("get chat group", () => {
 
     const user2 = await buildUser();
 
-    const myChatGroup = buildChatGroup([me, user2]);
-    const someoneChatGroup = buildChatGroup();
+    const myChatGroup = await buildChatGroup([me, user2]);
+    const someoneChatGroup = await buildChatGroup();
 
     const data = await authAPI.get(`/chat`);
 
@@ -78,5 +78,36 @@ describe("get chat group", () => {
 
     const allChatGroups = await Chat.countDocuments();
     expect(allChatGroups).toBe(2);
+  });
+
+  test("get one chat group by id", async () => {
+    const { user: me, authAPI } = await setup();
+
+    const user2 = await buildUser();
+
+    const myChatGroup = await buildChatGroup([me, user2]);
+    const someoneChatGroup = await buildChatGroup();
+
+    const data = await authAPI.get(`/chat/${myChatGroup.id}`);
+
+    expect(data).toMatchObject({
+      _id: myChatGroup.id,
+      users: [{ _id: me.id }, { _id: user2.id }],
+    });
+  });
+
+  test("getting chat by wrong id returns 404", async () => {
+    const { user: me, authAPI } = await setup();
+
+    const user2 = await buildUser();
+
+    const myChatGroup = await buildChatGroup([me, user2]);
+    const someoneChatGroup = await buildChatGroup();
+
+    const res = await authAPI
+      .get(`/chat/${new mongoose.Types.ObjectId().toString()}`)
+      .catch((e) => e);
+
+    expect(res.status).toBe(404);
   });
 });
