@@ -39,6 +39,11 @@ describe("send message", () => {
         _id: user1.id,
       },
     });
+
+    const chatNow = await Chat.findById(chat);
+    expect(chatNow).toMatchObject({
+      latestMessage: new mongoose.Types.ObjectId(data._id),
+    });
   });
 
   test("send message to someone else group returns 422", async () => {
