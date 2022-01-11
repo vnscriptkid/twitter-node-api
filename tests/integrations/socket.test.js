@@ -59,3 +59,17 @@ test("join chat and listen for typing from others", (done) => {
 
   socket1.emit("typing", "xyz");
 });
+
+test("listen for stop-typing", (done) => {
+  const [socket1, socket2] = sockets;
+
+  socket2.on("stop typing", () => {
+    done();
+  });
+
+  socket1.emit("join chat", "chat-group-1");
+  socket2.emit("join chat", "chat-group-1");
+
+  socket1.emit("typing", "chat-group-1");
+  socket1.emit("stop typing", "chat-group-1");
+});
