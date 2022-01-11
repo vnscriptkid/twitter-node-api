@@ -6,6 +6,7 @@ const UserNotFound = require("../errors/UserNotFound");
 const ChatNotFound = require("../errors/ChatNotFound");
 const ServerError = require("../errors/ServerError");
 const mongoose = require("mongoose");
+const Message = require("../models/Message");
 
 exports.store = async (req, res, next) => {
   try {
@@ -111,6 +112,22 @@ exports.private = async (req, res, next) => {
     ).populate("users");
 
     return res.send(chat);
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.messages = async (req, res, next) => {
+  try {
+    validationHandler(req);
+
+    const chatId = req.params.id;
+
+    const messages = await Message.find({
+      chat: chatId,
+    });
+
+    return res.send(messages);
   } catch (err) {
     next(err);
   }

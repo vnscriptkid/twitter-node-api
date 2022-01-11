@@ -8,6 +8,7 @@ const chatController = require("../controllers/chat");
 const { checkSchema } = require("express-validator");
 const { isValidObjectId } = require("mongoose");
 const User = require("../models/User");
+const Chat = require("../models/Chat");
 
 /* Create new chat group */
 router.post(
@@ -68,6 +69,32 @@ router.get(
     },
   }),
   chatController.private
+);
+
+router.get(
+  "/:id/messages",
+  passportJwt.authenticate(),
+  checkSchema({
+    id: {
+      in: "params",
+      custom: {
+        options: async (value, { req }) => {
+          if (!isValidObjectId(value))
+            return Promise.reject("Invalid chat id.");
+
+          const chat = await Chat.findById(value);
+
+          if (!chat) return Promise.reject("Invalid chat id.");
+
+          console.log(chat.users);
+
+          if (!chat.users.includes(req.user.id))
+            return Promise.reject("You are not allowed.");
+        },
+      },
+    },
+  }),
+  chatController.messages
 );
 
 module.exports = router;
