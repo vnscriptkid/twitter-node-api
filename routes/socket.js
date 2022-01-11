@@ -5,5 +5,7 @@ module.exports = (io) => {
     socket.on("join chat", (chatId) => socket.join(chatId));
 
     socket.on("typing", (chatId) => socket.in(chatId).emit("typing"));
+
+    socket.on("stop typing", (chatId) => socket.in(chatId).emit("stop typing"));
   });
 };
