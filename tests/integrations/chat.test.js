@@ -68,11 +68,19 @@ describe("get chat group", () => {
     const myChatGroup = await buildChatGroup([me, user2]);
     const someoneChatGroup = await buildChatGroup();
 
+    // I send a message to group
+    const message = await authAPI.post(`/message`, {
+      content: "hello",
+      chatId: myChatGroup.id,
+    });
+
+    /* ACTION */
     const data = await authAPI.get(`/chat`);
 
     expect(data).toMatchObject([
       {
         users: [{ _id: me.id }, { _id: user2.id }],
+        latestMessage: { _id: message._id },
       },
     ]);
 
