@@ -1,13 +1,12 @@
 const redis = require("../../config/redis");
 const DbContext = require("../../DbContext");
 const startServer = require("../../startServer");
-const { resetDb, buildPost, buildUser } = require("../utils/db-utils");
-const { setup } = require("../utils/api");
 const Post = require("../../models/Post");
 const ioClient = require("socket.io-client");
 const startSocketIO = require("../../startSocketIO");
 
 let server, ioServer;
+const sockets = [1, 2, 3];
 
 beforeAll(async () => {
   await DbContext.connect();
@@ -16,14 +15,47 @@ beforeAll(async () => {
   ioServer = startSocketIO(server);
 });
 
-afterAll(() => ioServer.close());
+afterAll((done) => {
+  ioServer.close();
+  done();
+});
 
-beforeEach(() => resetDb());
+beforeEach((done) => {
+  let count = 0;
 
-test("connect to socket", (done) => {
-  const socket = ioClient.connect(`http://localhost:8080`);
+  for (let i = 0; i < sockets.length; i++) {
+    sockets[i] = ioClient.connect(`http://localhost:8080`);
 
-  socket.on("connect", () => {
+    sockets[i].on("connect", () => {
+      count++;
+      if (count === sockets.length) done();
+    });
+  }
+});
+
+afterEach((done) => {
+  let count = 0;
+
+  for (let i = 0; i < sockets.length; i++) {
+    const socket = sockets[i];
+
+    if (socket.connected) {
+      count++;
+      socket.disconnect();
+      if (count === sockets.length) done();
+    }
+  }
+});
+
+test("join chat and listen for typing from others", (done) => {
+  const [socket1, socket2] = sockets;
+
+  socket2.on("typing", () => {
     done();
   });
+
+  socket1.emit("join chat", "xyz");
+  socket2.emit("join chat", "xyz");
+
+  socket1.emit("typing", "xyz");
 });
