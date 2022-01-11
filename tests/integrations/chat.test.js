@@ -80,7 +80,7 @@ describe("get chat group", () => {
     expect(data).toMatchObject([
       {
         users: [{ _id: me.id }, { _id: user2.id }],
-        latestMessage: { _id: message._id },
+        latestMessage: { _id: message._id, sender: { _id: me.id } },
       },
     ]);
 
