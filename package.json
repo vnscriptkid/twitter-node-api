@@ -23,7 +23,9 @@
     "multer": "^1.4.4",
     "passport": "^0.5.2",
     "passport-jwt": "^4.0.0",
-    "redis": "^4.0.1"
+    "redis": "^4.0.1",
+    "socket.io": "^4.4.1",
+    "socket.io-client": "^4.4.1"
   },
   "devDependencies": {
     "@types/jest": "^27.4.0",
