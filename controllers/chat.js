@@ -39,6 +39,9 @@ exports.index = async (req, res, next) => {
     })
       .populate(["users", "latestMessage"])
       .sort({ updatedAt: "desc" });
+
+    await User.populate(chats, "latestMessage.sender");
+
     res.send(chats);
   } catch (err) {
     next(err);
