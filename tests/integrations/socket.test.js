@@ -73,3 +73,23 @@ test("listen for stop-typing", (done) => {
   socket1.emit("typing", "chat-group-1");
   socket1.emit("stop typing", "chat-group-1");
 });
+
+test("user receives new-message from channel he has joined", (done) => {
+  const [socket1, socket2] = sockets;
+
+  socket1.emit("setup", "user-1");
+  socket2.emit("setup", "user-2");
+
+  socket2.on("new message", (message) => {
+    expect(message.content).toEqual("hello chat group");
+    done();
+  });
+
+  const message = {
+    chat: { users: [{ _id: "user-1" }, { _id: "user-2" }] },
+    content: "hello chat group",
+    sender: { _id: "user-1" },
+  };
+
+  socket1.emit("new message", message);
+});
