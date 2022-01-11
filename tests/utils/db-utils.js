@@ -22,6 +22,8 @@ exports.buildPost = buildPost;
 
 exports.buildChatGroup = buildChatGroup;
 
+exports.buildMessage = buildMessage;
+
 async function buildUser(props = {}) {
   const user = await User.create({
     email: faker.internet.email(),
@@ -61,4 +63,18 @@ async function buildChatGroup(users, props = {}) {
   });
 
   return chatGroup;
+}
+
+async function buildMessage({ sender, chat, ...props } = {}) {
+  if (!sender) sender = await buildUser();
+  if (!chat) chat = await buildChatGroup();
+
+  const message = await Message.create({
+    sender,
+    chat,
+    content: faker.lorem.sentence(),
+    ...props,
+  });
+
+  return message;
 }

@@ -1,7 +1,12 @@
 const redis = require("../../config/redis");
 const DbContext = require("../../DbContext");
 const startServer = require("../../startServer");
-const { resetDb, buildUser, buildChatGroup } = require("../utils/db-utils");
+const {
+  resetDb,
+  buildUser,
+  buildChatGroup,
+  buildMessage,
+} = require("../utils/db-utils");
 const { setup } = require("../utils/api");
 const Chat = require("../../models/Chat");
 const mongoose = require("mongoose");
@@ -254,5 +259,44 @@ describe("update chat", () => {
       .catch((e) => e);
 
     expect(res.status).toBe(500);
+  });
+});
+
+describe("messages of chat", () => {
+  test("get all messages of a chat success", async () => {
+    /* Arrange */
+    const { user: me, authAPI } = await setup();
+    const user2 = await buildUser();
+
+    const chat = await buildChatGroup([me, user2]);
+    const myMessageToChat = await buildMessage({ sender: me, chat });
+    const user2MessageToChat = await buildMessage({ sender: user2, chat });
+    const randomMessage = await buildMessage();
+
+    /* Action */
+    const data = await authAPI.get(`/chat/${chat.id}/messages`);
+
+    /* Assert */
+    expect(data).toMatchObject([
+      { _id: myMessageToChat.id },
+      { _id: user2MessageToChat.id },
+    ]);
+  });
+
+  test("user not in chat is not allowed", async () => {
+    /* Arrange */
+    const { user: user1, authAPI } = await setup();
+    const user2 = await buildUser();
+    const user3 = await buildUser();
+
+    const chat = await buildChatGroup([user2, user3]);
+
+    /* Action */
+    const data = await authAPI.get(`/chat/${chat.id}/messages`).catch((e) => e);
+
+    console.log({ data });
+
+    /* Assert */
+    expect(data.status).toBe(422);
   });
 });
