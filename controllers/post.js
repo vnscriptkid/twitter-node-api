@@ -150,6 +150,15 @@ exports.like = async (req, res, next) => {
       [pullOrAdd]: { likes: req.user.id },
     });
 
+    if (!isLiked) {
+      await Notification.insertNotification({
+        userFrom: req.user.id,
+        userTo: post.postedBy,
+        notificationType: "like",
+        entityId: post.id,
+      });
+    }
+
     return res.status(200).send({ message: isLiked ? "disliked" : "liked" });
   } catch (err) {
     next(err);
