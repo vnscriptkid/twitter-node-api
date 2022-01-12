@@ -2,6 +2,7 @@ const User = require("../models/User");
 const UserNotFound = require("../errors/UserNotFound");
 const { isValidObjectId } = require("mongoose");
 const validationHandler = require("../validations/validationHandler");
+const Notification = require("../models/Notification");
 
 exports.show = async (req, res, next) => {
   try {
@@ -48,6 +49,15 @@ exports.follow = async (req, res, next) => {
 
     // TODO: use transaction here
     await Promise.all([promise1, promise2]);
+
+    if (!isFollowingNow) {
+      await Notification.insertNotification({
+        userTo: userToFollow.id,
+        userFrom: req.user.id,
+        notificationType: "follow",
+        entityId: req.user.id, // follower
+      });
+    }
 
     return res.send({ message: isFollowingNow ? "unfollowed" : "followed" });
   } catch (err) {
