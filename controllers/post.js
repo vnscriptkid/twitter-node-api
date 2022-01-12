@@ -79,6 +79,17 @@ exports.store = async (req, res, next) => {
 
     await post.save();
 
+    await post.populate("replyTo");
+
+    if (post.replyTo) {
+      await Notification.insertNotification({
+        userFrom: req.user.id,
+        userTo: post.replyTo.postedBy,
+        notificationType: "reply",
+        entityId: post.id,
+      });
+    }
+
     return res.status(201).send(post);
   } catch (error) {
     next(error);
