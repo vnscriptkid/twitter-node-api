@@ -4,6 +4,8 @@ const startServer = require("../../startServer");
 const { resetDb, buildPost, buildUser } = require("../utils/db-utils");
 const { setup } = require("../utils/api");
 const Post = require("../../models/Post");
+const Notification = require("../../models/Notification");
+const mongoose = require("mongoose");
 
 let server;
 
@@ -43,6 +45,9 @@ test("replies to someone's post", async () => {
     postedBy: {
       _id: user.id,
     },
+    replyTo: {
+      _id: someonePost.id,
+    },
   });
 });
 
@@ -80,4 +85,46 @@ test("replyTo is populated for index route", async () => {
       },
     },
   ]);
+});
+
+describe("reply notification", () => {
+  test("notif is created when someone replies", async () => {
+    /* Arrange */
+    const { user: userA, authAPI } = await setup();
+
+    const userB = await buildUser();
+    const postOfUserB = await buildPost(userB);
+
+    /* Action */
+    // userA replies on post of user B
+    const reply = await authAPI.post("/posts", {
+      content: "hello",
+      replyTo: postOfUserB.id,
+    });
+
+    /* Assert */
+    const notifs = await Notification.find();
+    expect(notifs).toHaveLength(1);
+
+    expect(notifs[0]).toMatchObject({
+      userFrom: userA._id,
+      userTo: userB._id,
+      notificationType: "reply",
+      entityId: mongoose.Types.ObjectId(reply._id),
+    });
+  });
+
+  test("normal post will not create notif", async () => {
+    /* Arrange */
+    const { user, authAPI } = await setup();
+
+    /* Action */
+    await authAPI.post("/posts", {
+      content: "hello",
+    });
+
+    /* Assert */
+    const notifs = await Notification.find();
+    expect(notifs).toHaveLength(0);
+  });
 });
