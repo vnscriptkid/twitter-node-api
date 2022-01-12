@@ -1,6 +1,7 @@
 const { matchedData } = require("express-validator");
 const PostNotFound = require("../errors/PostNotFound");
 const Unauthorized = require("../errors/Unauthorized");
+const Notification = require("../models/Notification");
 const Post = require("../models/Post");
 const User = require("../models/User");
 const validationHandler = require("../validations/validationHandler");
@@ -181,11 +182,15 @@ exports.retweet = async (req, res, next) => {
       });
     }
 
-    const promise1 = Post.findByIdAndUpdate(originalPost.id, {
-      [pullOrAdd]: {
-        retweetUsers: userId,
+    const promise1 = Post.findByIdAndUpdate(
+      originalPost.id,
+      {
+        [pullOrAdd]: {
+          retweetUsers: userId,
+        },
       },
-    });
+      { new: true }
+    );
 
     const promise2 = User.findByIdAndUpdate(userId, {
       [pullOrAdd]: {
@@ -194,6 +199,15 @@ exports.retweet = async (req, res, next) => {
     });
 
     await Promise.all([promise1, promise2]);
+
+    if (!deleted) {
+      await Notification.insertNotification({
+        userTo: originalPost.postedBy,
+        userFrom: userId,
+        notificationType: "retweet",
+        entityId: originalPost._id,
+      });
+    }
 
     return res
       .status(200)
