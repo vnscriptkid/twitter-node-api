@@ -9,6 +9,7 @@ const followRoutes = require("./routes/follow");
 const userRoutes = require("./routes/user");
 const chatRoutes = require("./routes/chat");
 const messageRoutes = require("./routes/message");
+const notificationRoutes = require("./routes/notification");
 
 const errorHandler = require("./middlewares/errorHandler");
 const passportJwt = require("./middlewares/passportJwt")();
@@ -39,6 +40,7 @@ const startServer = ({ port = process.env.PORT } = {}) => {
   app.use("/api/users", passportJwt.authenticate(), userRoutes);
   app.use("/api/chat", passportJwt.authenticate(), chatRoutes);
   app.use("/api/message", passportJwt.authenticate(), messageRoutes);
+  app.use("/api/notifications", passportJwt.authenticate(), notificationRoutes);
 
   app.use(errorHandler);
 
