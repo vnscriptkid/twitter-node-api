@@ -10,6 +10,7 @@ const {
 const { setup } = require("../utils/api");
 const Chat = require("../../models/Chat");
 const mongoose = require("mongoose");
+const Message = require("../../models/Message");
 
 let server;
 
@@ -299,4 +300,40 @@ describe("messages of chat", () => {
     /* Assert */
     expect(data.status).toBe(422);
   });
+});
+
+test("get unread chats only", async () => {
+  /* Arrange */
+  const { user: user1, authAPI: authAPI1 } = await setup();
+  const { user: user2, authAPI: authAPI2 } = await setup();
+  const { user: user3, authAPI: authAPI3 } = await setup();
+
+  const readChat = await buildChatGroup([user1, user2]);
+  const unreadChat = await buildChatGroup([user1, user3]);
+
+  const readMessage = await authAPI2.post(`/message`, {
+    content: "hello",
+    chatId: readChat.id,
+  });
+
+  const unreadMessage = await authAPI3.post(`/message`, {
+    content: "hi there",
+    chatId: unreadChat.id,
+  });
+
+  // manually read message
+  await Message.findByIdAndUpdate(readMessage, {
+    $addToSet: {
+      readBy: user1._id,
+    },
+  });
+
+  const data = await authAPI1.get(`/chat?unreadOnly=true`);
+
+  expect(data).toHaveLength(1);
+  expect(data).toMatchObject([
+    {
+      _id: unreadChat.id,
+    },
+  ]);
 });
