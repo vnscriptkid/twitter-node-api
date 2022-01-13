@@ -29,7 +29,17 @@ router.post(
 );
 
 /* Get all of my chat groups */
-router.get("/", passportJwt.authenticate(), chatController.index);
+router.get(
+  "/",
+  passportJwt.authenticate(),
+  checkSchema({
+    unreadOnly: {
+      in: "query",
+      optional: true,
+    },
+  }),
+  chatController.index
+);
 
 /* Update a single chat */
 router.patch(

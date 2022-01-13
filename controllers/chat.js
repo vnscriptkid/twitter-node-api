@@ -35,11 +35,19 @@ exports.store = async (req, res, next) => {
 
 exports.index = async (req, res, next) => {
   try {
-    const chats = await Chat.find({
+    const { unreadOnly } = req.query;
+
+    let chats = await Chat.find({
       users: { $elemMatch: { $eq: req.user.id } },
     })
       .populate(["users", "latestMessage"])
       .sort({ updatedAt: "desc" });
+
+    if (unreadOnly && unreadOnly === "true") {
+      chats = chats.filter(
+        (chat) => !chat.latestMessage.readBy.includes(req.user._id)
+      );
+    }
 
     await User.populate(chats, "latestMessage.sender");
 
